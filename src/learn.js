@@ -92,6 +92,13 @@ app.get("/admin/deleteUser",(req,res)=>{
     res.send("User Deleted");
 })
 
+app.use("/",(err,req,res,next)=>{
+    if(err){
+        console.log(err)
+        res.status(500).send("Internal Server Error");
+    }
+})
+
 app.listen(4000,()=>{
     console.log("Listening on port 4000");
 });
