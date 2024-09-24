@@ -4,8 +4,13 @@ const app = express();
 const User = require("./models/user");
 const {validateSignUpData} = require("./utils/validation");
 const {bcrypt} = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {UserAuth} = require("./middlewares/auth");
+
 
 app.use(express.json());
+app.use(cookieParser())
 app.post("/signup",async(req,res)=>{
 // Validation of Data
  validateSignUpData(req)
@@ -40,8 +45,10 @@ app.post("/login",async(req,res)=>{
      if(!user){
         throw new Error ("User not found");
      }
-     const isPasswordValid = await bcrypt.compare(password,user.password);
+     const isPasswordValid = await user.validatePassword(password);
      if(isPasswordValid){
+        const token = await user.getJwt();
+        res.cookie("token",token)
         res.send("Login Successful");
      }else{
         res.status(400).send("Invalid Credentials");
@@ -50,6 +57,19 @@ app.post("/login",async(req,res)=>{
         res.status(400).send(err.message);
     }
 })
+
+app.get("/profile",UserAuth,async(req,res)=>{
+    try{
+         const user = req.user;
+        console.log("Logged in user",_id);
+        res.send(user);
+    }
+    catch(err){
+        
+    }    
+})
+
+
 
 // Get User by email
 app.get("/user",async(req,res)=>{
