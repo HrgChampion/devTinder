@@ -2,7 +2,6 @@ const express = require("express");
 const connectDb = require("./config/database");
 const app = express();
 const User = require("./models/user");
-const {validateSignUpData} = require("./utils/validation");
 const {bcrypt} = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -11,64 +10,14 @@ const {UserAuth} = require("./middlewares/auth");
 
 app.use(express.json());
 app.use(cookieParser())
-app.post("/signup",async(req,res)=>{
-// Validation of Data
- validateSignUpData(req)
-// Encrypt password
 
- const passwordHash = await bcrypt.hash(req.body.password,10);
-    const user = new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        emailId: req.body.emailId,
-        password: passwordHash,
-        age: req.body.age,
-        gender: req.body.gender,
-        photoUrl: req.body.photoUrl,
-        about: req.body.about,
-        skills: req.body.skills
-    });
-    try{
-    await user.save();
-    res.send("User added successfully");
-    }catch(err){
-        console.log(err);
-        res.status(400).send(err.message);
-    }
-    res.send(user);
-})
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/requests");
 
-app.post("/login",async(req,res)=>{
-    try{
-     const {emailId,password} = req.body;
-     const user = await User.findOne({emailId});
-     if(!user){
-        throw new Error ("User not found");
-     }
-     const isPasswordValid = await user.validatePassword(password);
-     if(isPasswordValid){
-        const token = await user.getJwt();
-        res.cookie("token",token)
-        res.send("Login Successful");
-     }else{
-        res.status(400).send("Invalid Credentials");
-     }
-    }catch(err){
-        res.status(400).send(err.message);
-    }
-})
-
-app.get("/profile",UserAuth,async(req,res)=>{
-    try{
-         const user = req.user;
-        console.log("Logged in user",_id);
-        res.send(user);
-    }
-    catch(err){
-        
-    }    
-})
-
+app.use("/",authRouter);
+app.use("/",profileRouter);
+app.use("/",requestRouter);
 
 
 // Get User by email
