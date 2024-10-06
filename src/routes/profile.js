@@ -1,7 +1,7 @@
 const express = require("express");
 const {validateProfileData} = require("../utils/validation");
 const profileRouter = express.Router();
-const UserAuth = require("../middlewares/auth");
+const {UserAuth} = require("../middlewares/auth");
 profileRouter.get("/profile/view",UserAuth,async(req,res)=>{
     try{
          const user = req.user;

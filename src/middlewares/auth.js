@@ -15,7 +15,7 @@ const UserAuth =async(req,res,next)=>{
   try{
 const {token} = req.cookies;
 if(!token){
-  throw new Error("Invalid Token");
+  return res.status(401).send("Not Authorized")
 }
 const decodedObj = await jwt.verify(token,"Dev@Tinder$790");
 const user = await User.findById({_id:decodedObj._id});

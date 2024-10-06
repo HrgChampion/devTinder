@@ -18,7 +18,7 @@ userRouter.get("/user/requests/received",UserAuth,async(req,res)=>{
 
 })
 
-userRouter.get("user/connections",userAuth,async(req,res)=>{
+userRouter.get("user/connections",UserAuth,async(req,res)=>{
     try{
     const loggedInUser = req.user;
     const connectionRequests = await ConnectionRequest.find({
@@ -42,7 +42,7 @@ userRouter.get("user/connections",userAuth,async(req,res)=>{
     }
 })
 
-userRouter.get("/feed",userAuth, async(req,res)=>{
+userRouter.get("/feed",UserAuth, async(req,res)=>{
     try{
     const loggedInUser = req.user;
     const page = parseInt(req.query.page) || 1;
